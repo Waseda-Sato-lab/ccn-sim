@@ -142,7 +142,7 @@ int main (int argc, char *argv[])
 	std::cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << std::endl;
 	LogComponentEnable ("OnOffApplication", LOG_LEVEL_INFO);
 
-	int nCN = 12, nLANClients = 12;
+	int nCN = 3, nLANClients = 42;
 	bool nix = true;
 
 	CommandLine cmd;
@@ -682,9 +682,9 @@ int main (int argc, char *argv[])
 	//producerHelper.Install (nodes.Get (2)); // last node
 	producerHelper.Install (nodes_net2LAN[0][2][20].Get (0));*/
 
-	Ipv4RateL3Tracer::InstallAll ("rate-trace.txt", Seconds (1.0));
-	Ipv4SeqsAppTracer::InstallAll("app-delays-trace.txt");
-	L2RateTracer::InstallAll ("drop-trace.txt", Seconds (0.5));
+	Ipv4RateL3Tracer::InstallAll ("results/disaster-tcp-rate-trace.txt", Seconds (1.0));
+	Ipv4SeqsAppTracer::InstallAll("results/disaster-tcp-app-delays-trace.txt");
+	L2RateTracer::InstallAll ("results/disaster-tcp-drop-trace.txt", Seconds (0.5));
 
 	Simulator::Stop (Seconds (20.0));
 	Simulator::Run ();
