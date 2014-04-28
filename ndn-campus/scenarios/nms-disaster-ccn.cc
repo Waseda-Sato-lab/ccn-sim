@@ -578,6 +578,12 @@ int main (int argc, char *argv[])
 	//producerHelper.Install (nodes.Get (2)); // last node
 	producerHelper.Install (nodes_net2LAN[0][2][20].Get (0));
 
+	// Obtain metrics
+	ndn::L3AggregateTracer::InstallAll("aggregate-trace.txt", Seconds (1.0));
+	ndn::L3RateTracer::InstallAll ("rate-trace.txt", Seconds (1.0));
+	ndn::AppDelayTracer::InstallAll ("app-delays-trace.txt");
+	L2RateTracer::InstallAll ("drop-trace.txt", Seconds (0.5));
+
 	Simulator::Stop (Seconds (20.0));
 
 	Simulator::Run ();
