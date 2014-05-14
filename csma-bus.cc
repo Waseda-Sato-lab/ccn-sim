@@ -103,7 +103,9 @@ main (void)
   clientHelper.SetAttribute("PacketSize", UintegerValue (32000));
   clientHelper.SetAttribute("DataRate", StringValue ("100Mbps"));
 
-
+  ApplicationContainer clientApps = clientHelper.Install (csmaClient);
+  clientApps.Start (Seconds (1.0));
+  clientApps.Stop (Seconds (10.0));
 
 
   //Configure tracing
