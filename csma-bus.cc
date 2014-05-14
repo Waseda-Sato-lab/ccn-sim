@@ -44,16 +44,16 @@ using namespace ns3;
 NS_LOG_COMPONENT_DEFINE ("CSMA-BUS");//Default: SecondScriptExample
 
 int 
-main (void)
+main (int argc, char *argv[])
 {
   uint32_t nCsma = 5;
   //uint32_t maxBytes = 32000;
 
-  //CommandLine cmd;
+  CommandLine cmd;
   //cmd.AddValue ("nCsma", "Number of \"extra\" CSMA nodes/devices", nCsma);
   //cmd.AddValue ("verbose", "Tell echo applications to log if true", verbose);
 
-  //cmd.Parse (argc,argv);
+  cmd.Parse (argc,argv);
 
   // CSMA Channel setting
   CsmaHelper csma;
@@ -68,6 +68,9 @@ main (void)
   NodeContainer csmaClient;
   csmaClient.Create(nCsma);
 
+  NodeContainer global = NodeContainer::GetGlobal ();
+  uint32_t size = global.GetN ();
+  
   NodeContainer csmaNodes = NodeContainer(csmaServer, csmaClient);
 
   //Install CSMA Devices
@@ -97,15 +100,22 @@ main (void)
 
 
   // Create the OnOff applications to send TCP to the server
-  OnOffHelper clientHelper ("ns3::TcpSocketFactory", Address ());
+  OnOffHelper clientHelper ("ns3::TcpSocketFactory", sinkLocalAddress);
   //clientHelper.SetAttribute ("OnTime", StringValue ("ns3::ConstantRandomVariable[Constant=1]"));
   //clientHelper.SetAttribute ("OffTime", StringValue ("ns3::ConstantRandomVariable[Constant=0]"));
   clientHelper.SetAttribute("PacketSize", UintegerValue (32000));
   clientHelper.SetAttribute("DataRate", StringValue ("100Mbps"));
 
-  ApplicationContainer clientApps = clientHelper.Install (csmaClient);
-  clientApps.Start (Seconds (1.0));
-  clientApps.Stop (Seconds (10.0));
+  ApplicationContainer clientApp;
+
+   for (uint32_t i = 0; i < size-1; ++i)
+     {
+       AddressValue remoteAddress (sinkLocalAddress);
+       clientHelper.SetAttribute ("Remote", remoteAddress);
+       clientApp.Add (clientHelper.Install (csmaClient.Get (i)));
+     }
+   clientApp.Start (Seconds (1.0));
+   clientApp.Stop (Seconds (10.0));
 
 
   //Configure tracing
