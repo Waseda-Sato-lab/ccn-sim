@@ -719,11 +719,17 @@ int main (int argc, char *argv[])
 	delete[] nodes_netLR;*/
 
 	// Calculate routing tables
-	std::cout << "Populating Global Static Routing Tables..." << std::endl;
-	Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
+	
+		//std::cout << "Populating Global Static Routing Tables..." << std::endl;
+	//Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 	ndn::StackHelper ndnHelper;
-	ndnHelper.SetDefaultRoutes (true);
+	//ndnHelper.SetDefaultRoutes (true);
 	ndnHelper.InstallAll ();
+
+	ndn::GlobalRoutingHelper ndnGlobalRoutingHelper;
+		ndnGlobalRoutingHelper.InstallAll ();
+		ndnGlobalRoutingHelper.AddOrigins ("/Dinfo/tokyo/shinjuku/waseda-u/waseda", serverNodes);
+		ndn::GlobalRoutingHelper::CalculateRoutes ();
 
 	// Consumer
 	ndn::AppHelper consumerHelper ("ns3::ndn::ConsumerCbr");
