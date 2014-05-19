@@ -724,16 +724,16 @@ int main (int argc, char *argv[])
 	//Ipv4GlobalRoutingHelper::PopulateRoutingTables ();
 	ndn::StackHelper ndnHelper;
 	//ndnHelper.SetDefaultRoutes (true);
+	// Install Content Store
+	ndnHelper.SetContentStore("ns3::ndn::cs::Lru","MaxSize","10000");
+	ndnHelper.InstallAll ();
 	
 	ndn::GlobalRoutingHelper ndnGlobalRoutingHelper;
 		ndnGlobalRoutingHelper.InstallAll ();
 		ndnGlobalRoutingHelper.AddOrigins ("/Dinfo/tokyo/shinjuku/waseda-u/waseda", serverNodes);
 		ndn::GlobalRoutingHelper::CalculateRoutes ();
 
-        // Install Content Store
-        ndnHelper.SetContentStore("ns3::ndn::cs:Lru","MaxSize","10000");
-
-        ndnHelper.InstallAll ();
+        
 
 	// Consumer
 	ndn::AppHelper consumerHelper ("ns3::ndn::ConsumerCbr");
@@ -741,7 +741,13 @@ int main (int argc, char *argv[])
 	consumerHelper.SetPrefix ("/Dinfo/tokyo/shinjuku/waseda-u/waseda");
 	consumerHelper.SetAttribute ("Frequency", StringValue ("100")); // 10 interests a second
 	//consumerHelper.Install (nodes.Get (12)); // first node
-	consumerHelper.Install (clientNodes);
+	//consumerHelper.Install (clientNodes);
+	
+	ApplicationContainer apps;
+
+	apps = consumerHelper.Install (clientNodes);
+	apps.Start (Seconds (0.1));
+	apps.Stop (Seconds (15.0)); 
 
 
 	// Producer
@@ -749,23 +755,22 @@ int main (int argc, char *argv[])
 	// Producer will reply to all requests starting with /prefix
 	producerHelper.SetPrefix ("/Dinfo/tokyo/shinjuku/waseda-u/waseda");
 	producerHelper.SetAttribute ("PayloadSize", StringValue("1024"));
-        producerHelper.SetAttribute ("Freshness", TimeValue (Seconds(0)));
+        
+    producerHelper.SetAttribute ("Freshness", TimeValue (Seconds(0)));
 	//producerHelper.Install (nodes.Get (2)); // last node
 	producerHelper.Install (serverNodes);
         
-        ApplicationContainer apps;
+    
 
-        apps = consumerHelper.Install(clientNodes);
-        apps.Start (Seconds (0.1));
-        apps.Stop (Seconds (15.0));
-
-        apps         
+                
 	// Obtain metrics
 	ndn::L3AggregateTracer::InstallAll("results/disaster-ccn-aggregate-trace.txt", Seconds (1.0));
 	ndn::L3RateTracer::InstallAll ("results/disaster-ccn-rate-trace.txt", Seconds (1.0));
 	ndn::AppDelayTracer::InstallAll ("results/disaster-ccn-app-delays-trace.txt");
 	L2RateTracer::InstallAll ("results/disaster-ccn-drop-trace.txt", Seconds (0.5));
 
+	p2p_1gb5ms.EnablePcap ("results/ccn_test0.pcap", serverNodes.Get(0)->GetId (), true,true);
+	//p2p_1gb5ms.EnablePcap ("results/tcp_test1.pcap", serverNodes.Get(1)->GetId (), true,true);
 	Simulator::Stop (Seconds (20.0));
 
 	Simulator::Run ();
