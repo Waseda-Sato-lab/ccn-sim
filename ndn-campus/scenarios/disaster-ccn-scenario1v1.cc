@@ -226,13 +226,6 @@ int main (int argc, char *argv[])
 	TIMER_TYPE t0, t1, t2;
 	TIMER_NOW (t0);
 	std::cout << " ==== DARPA NMS CAMPUS NETWORK SIMULATION ====" << std::endl;
-	LogComponentEnable ("OnOffApplication", LOG_LEVEL_INFO);
-
-	int nCN = 3, nLANClients = 42; 
-	bool nix = true;
-	
-	// Char array for output strings
-	char buffer[250];
 
 	// These are our scenario arguments
 	uint32_t contentsize = 1048576; // Size in bytes of the content to transfer
@@ -241,6 +234,14 @@ int main (int argc, char *argv[])
 	uint32_t networks = 2; // Number of additional nodes in the network
 
 	char results[250] = "results";
+
+	int nCN = 3, nLANClients = 42; 
+	bool nix = true;
+	
+	// Char array for output strings
+	char buffer[250];
+
+
 	
 	CommandLine cmd;
 	cmd.AddValue ("CN", "Number of total CNs [2]", nCN);
@@ -922,8 +923,6 @@ int main (int argc, char *argv[])
 	//p2p_1gb5ms.EnablePcap ("results/tcp_test1.pcap", serverNodes.Get(1)->GetId (), true,true);
 	
     Simulator::Stop (Seconds (60.0));
-	Simulator::Run ();
-	Simulator::Destroy ();
 	Simulator::Run ();
 	Simulator::Destroy ();
 	return 0;		
