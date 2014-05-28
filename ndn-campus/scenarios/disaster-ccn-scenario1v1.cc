@@ -611,11 +611,11 @@ int main (int argc, char *argv[])
 	if (networks == 1){
 		ndnGlobalRoutingHelper.AddOrigins ("/Dinfo/tokyo/shinjuku/wasedau/net1/server/", nodes_net1[0][5].Get (0));
 	}
-	else if (networks ==2){
+	else if (networks == 2){
 		ndnGlobalRoutingHelper.AddOrigins ("/Dinfo/tokyo/shinjuku/wasedau/net1/server/", nodes_net1[0][5].Get (0));
 		ndnGlobalRoutingHelper.AddOrigins ("/Dinfo/tokyo/shinjuku/nishiwasedau/net1/server/", nodes_net1[1][5].Get (0));
 	}
-	else if{
+	else if(networks == 3){
 		ndnGlobalRoutingHelper.AddOrigins ("/Dinfo/tokyo/shinjuku/wasedau/net1/server/", nodes_net1[0][5].Get (0));
 		ndnGlobalRoutingHelper.AddOrigins ("/Dinfo/tokyo/shinjuku/nishiwasedau/net1/server/", nodes_net1[1][5].Get (0));
 		ndnGlobalRoutingHelper.AddOrigins ("/Dinfo/tokyo/shinjuku/toyamawasedau/net1/server/", nodes_net1[2][5].Get (0));
