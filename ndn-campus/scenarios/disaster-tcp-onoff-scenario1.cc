@@ -34,7 +34,7 @@
 /*
     2014-5-29    
     Jairo, Zhu
-
+*/
 // Standard C++ modules
 #include <algorithm>
 #include <cstdlib>
@@ -239,7 +239,7 @@ int main (int argc, char *argv[])
 
 	// These are our scenario arguments
 	uint32_t contentsize = 10485760; // Size in bytes of the content to transfer
-	uint32_t clients = 15; // Number of clients in the network
+	uint32_t clients = 10; // Number of clients in the network
 	uint32_t servers = 1; // Number of servers in the network
 	uint32_t networks = 1; // Number of additional nodes in the network
 	char results[250] = "results";
@@ -692,7 +692,7 @@ int main (int argc, char *argv[])
 
 	// Begin and stop the bulk sender at the following times
 	sourceApps.Start (Seconds (1.0));
-	sourceApps.Stop (Seconds (19.0));
+	sourceApps.Stop (Seconds (200.0));
 
 	NS_LOG_INFO ("Create bulk clients");
 
@@ -703,7 +703,7 @@ int main (int argc, char *argv[])
 	// Install the sink application on all clients
 	ApplicationContainer sinkApps = sink.Install (clientNodes);
 	sinkApps.Start (Seconds (1.0));
-	sinkApps.Stop (Seconds (19.0));
+	sinkApps.Stop (Seconds (200.0));
 
 
 	/*
@@ -773,7 +773,7 @@ int main (int argc, char *argv[])
     p2p_1gb5ms.EnablePcap (filename, 8, true,true);
     //p2p_1gb5ms.EnablePcap ("results/tcp_server.pcap", 8, true,true);
 
-	Simulator::Stop (Seconds (20.0));
+	Simulator::Stop (Seconds (100.0));
 	Simulator::Run ();
 	Simulator::Destroy ();
 
