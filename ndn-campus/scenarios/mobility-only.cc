@@ -46,34 +46,61 @@ int main (int argc, char *argv[])
 	//     }
 	// Vector vec (10, 20, 0);
 	// Loc->SetPosition (vec);
-	MobilityHelper mobility;
+	MobilityHelper mobilityStations;
+
+	mobilityStations.SetPositionAllocator ("ns3::GridPositionAllocator",
+			"MinX", DoubleValue (0.0),
+			"MinY", DoubleValue (0.0),
+			"DeltaX", DoubleValue (20.0),
+			"DeltaY", DoubleValue (0.0),
+			"GridWidth", UintegerValue (sta.GetN()),
+			"LayoutType", StringValue ("RowFirst"));
+	mobilityStations.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
+
+	mobilityStations.Install (sta);
+
+	MobilityHelper mobilityTrain;
+
+	Vector diff = Vector(0.0, 8.0, 0.0);
+
+	Vector pos;
+
+	Ptr<ListPositionAllocator> initialAlloc = CreateObject<ListPositionAllocator> ();
+
+	Ptr<MobilityModel> mob = sta.Get(0)->GetObject<MobilityModel>();
+
+	pos = mob->GetPosition();
+
+	initialAlloc->Add (pos + diff);
+
 	// Put everybody into a line
-	Ptr<ListPositionAllocator> initialAlloc =
-			CreateObject<ListPositionAllocator> ();
-	initialAlloc->Add (Vector (16.0, 22, 0.));
-	initialAlloc->Add (Vector (45.0, 37, 0.));
-	initialAlloc->Add (Vector (53.0, 8, 0.));
+	//initialAlloc->Add (Vector (45.0, 37, 0.));
+	//initialAlloc->Add (Vector (53.0, 8, 0.));
+	mobilityTrain.SetPositionAllocator(initialAlloc);
+	mobilityTrain.SetMobilityModel("ns3::WaypointMobilityModel");
+	mobilityTrain.Install(train.Get(0));
 
-	mobility.SetPositionAllocator(initialAlloc);
-
-	mobility.SetMobilityModel("ns3::WaypointMobilityModel");
-	mobility.Install(train.Get(0));
 	// Set mobility random number streams to fixed values
 	//mobility.AssignStreams (sta, 0);
+
 	Ptr<WaypointMobilityModel> staWaypointMobility = DynamicCast<WaypointMobilityModel>( train.Get(0)->GetObject<MobilityModel>());
 
-	Ptr<MobilityModel> mob = train.Get(0)->GetObject<MobilityModel>();
+	double sec = 0.0;
+	double waitint = 0.3;
+	double travelTime = 2.0;
 
-	Vector pos = mob->GetPosition();
+	for (int j; j < sta.GetN(); j++)
+	{
+		mob = sta.Get(j)->GetObject<MobilityModel>();
 
-	std::cout << "Vector test x: " << pos.x << " y: " << pos.y << std::endl;
-	// AsciiTraceHelper ascii;
-	//MobilityHelper::EnableAsciiAll (ascii.CreateFileStream ("mobility-trace-example.mob"));
-	staWaypointMobility->AddWaypoint(Waypoint(Seconds(1.0),Vector(10.0,9,0)));
-	staWaypointMobility->AddWaypoint(Waypoint(Seconds(4.0), Vector(16.0,22,0)));
-	staWaypointMobility->AddWaypoint(Waypoint(Seconds(8.0), Vector(16.0,22,0)));
-	staWaypointMobility->AddWaypoint (Waypoint (Seconds (13.0),Vector (45.0, 37, 0)));
-	staWaypointMobility->AddWaypoint(Waypoint (Seconds (15.0),Vector (53.0, 8,0)));
+		Vector wayP = mob->GetPosition() + diff;
+
+		staWaypointMobility->AddWaypoint(Waypoint(Seconds(sec), wayP));
+		staWaypointMobility->AddWaypoint(Waypoint(Seconds(sec + waitint), wayP));
+
+		sec += waitint + travelTime;
+	}
+
 	Simulator::Stop (Seconds (40.0));
 	Simulator::Run ();
 	Simulator::Destroy ();
